@@ -1,5 +1,5 @@
 // src/usuario/usuario.module.ts
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuarioService } from './usuario.service';
 import { UsuarioController } from './usuario.controller';
@@ -13,7 +13,7 @@ import { AuthModule } from '../auth/auth.module';
     TypeOrmModule.forFeature([Usuario]),
     CargoModule,
     EmpresasModule,
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   controllers: [UsuarioController],
   providers: [UsuarioService],
