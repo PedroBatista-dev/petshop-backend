@@ -47,7 +47,11 @@ export class CreateEmpresaDto implements AuditableDto {
   @IsString({ message: 'A observação deve ser uma string.' })
   observacao?: string;
 
-  // Campos de auditoria
+  @IsOptional()
+  @IsString()
   createId?: string;
+
+  @IsOptional()
+  @IsString()
   updateId?: string;
 }

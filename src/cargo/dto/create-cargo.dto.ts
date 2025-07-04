@@ -1,5 +1,5 @@
 // src/cargo/dto/create-cargo.dto.ts
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateCargoDto implements AuditableDto {
@@ -8,7 +8,11 @@ export class CreateCargoDto implements AuditableDto {
   @MaxLength(50, { message: 'A descrição do cargo deve ter no máximo 50 caracteres.' })
   descricao: string;
 
-  // Campos de auditoria
+  @IsOptional()
+  @IsString()
   createId?: string;
+
+  @IsOptional()
+  @IsString()
   updateId?: string;
 }

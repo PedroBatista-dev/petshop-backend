@@ -11,7 +11,7 @@ export class CreateUsuarioDto implements AuditableDto {
 
   @IsNotEmpty({ message: 'O CPF é obrigatório.' })
   @IsString({ message: 'O CPF deve ser uma string.' })
-  @Matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, { message: 'O CPF deve estar no formato XXX.XXX.XXX-XX.' })
+  @Matches(/^\d{11}$/, { message: 'O CPF deve conter exatamente 11 dígitos numéricos.' })
   cpf: string;
 
   @IsNotEmpty({ message: 'A data de nascimento é obrigatória.' })
@@ -40,15 +40,19 @@ export class CreateUsuarioDto implements AuditableDto {
   @MaxLength(20, { message: 'A senha deve ter no máximo 20 caracteres.' })
   password: string;
 
-  @IsNotEmpty({ message: 'O código do cargo é obrigatório.' })
+  @IsOptional()
   @IsUUID('4', { message: 'Código de cargo inválido.' })
-  codigoCargoId: string;
+  codigoCargoId?: string;
 
   @IsOptional()
   @IsUUID('4', { message: 'Código da empresa inválido.' })
   codigoEmpresaId?: string;
 
-  // Campos de auditoria
+  @IsOptional()
+  @IsString()
   createId?: string;
+
+  @IsOptional()
+  @IsString()
   updateId?: string;
 }

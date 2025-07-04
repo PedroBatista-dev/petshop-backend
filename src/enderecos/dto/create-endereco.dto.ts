@@ -53,7 +53,11 @@ export class CreateEnderecoDto implements AuditableDto {
   @IsUUID('4', { message: 'Código do usuário inválido.' })
   codigoUsuarioId?: string;
 
-  // Campos de auditoria
+  @IsOptional()
+  @IsString()
   createId?: string;
+
+  @IsOptional()
+  @IsString()
   updateId?: string;
 }

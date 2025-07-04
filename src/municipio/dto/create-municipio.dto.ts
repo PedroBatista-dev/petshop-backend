@@ -18,7 +18,11 @@ export class CreateMunicipioDto implements AuditableDto {
   @MaxLength(20, { message: 'O código IBGE deve ter no máximo 20 caracteres.' })
   codigoIbge?: string;
 
-  // Campos de auditoria
+  @IsOptional()
+  @IsString()
   createId?: string;
+
+  @IsOptional()
+  @IsString()
   updateId?: string;
 }

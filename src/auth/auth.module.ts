@@ -8,14 +8,21 @@ import { UsuarioModule } from '../usuario/usuario.module';
 import { CargoModule } from '../cargo/cargo.module';
 import { JwtStrategy } from './jwt.strategy';
 import { CommonModule } from '../common/common.module';
-import { jwtConfig } from '../config/jwt.config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     UsuarioModule,
     CargoModule,
     PassportModule,
-    JwtModule.register(jwtConfig),
+    JwtModule.registerAsync({
+      imports: [ConfigModule], 
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'), 
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
+    }),
     CommonModule,
   ],
   controllers: [AuthController],
