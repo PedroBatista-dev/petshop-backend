@@ -47,10 +47,7 @@ export class AuthController {
   }
 
   @Post('register/cliente')
-  async registerCliente(@Body() createUsuarioDto: CreateUsuarioDto, @Request() req) {
-    if (req.user && req.user.cargoDescricao) {
-      return this.authService.registerCliente(createUsuarioDto, req.user.cargoDescricao, req.user.codigoEmpresaId);
-    }
+  async registerCliente(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.authService.registerCliente(createUsuarioDto);
   }
   

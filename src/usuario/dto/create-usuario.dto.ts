@@ -44,7 +44,7 @@ export class CreateUsuarioDto implements AuditableDto {
   @IsUUID('4', { message: 'Código de cargo inválido.' })
   codigoCargoId?: string;
 
-  @IsOptional()
+  @IsNotEmpty({ message: 'Código da empresa é obrigatório.' })
   @IsUUID('4', { message: 'Código da empresa inválido.' })
   codigoEmpresaId?: string;
 

@@ -111,17 +111,13 @@ export class AuthService {
     return this.usuarioService.create(createUsuarioDto);
   }
 
-  async registerCliente(createUsuarioDto: CreateUsuarioDto, creatorCargoDesc?: string, creatorCompanyId?: string) {
+  async registerCliente(createUsuarioDto: CreateUsuarioDto) {
     const clienteCargo = await this.cargoService.findOneByDescricao('Cliente');
     if (!clienteCargo) {
       throw new NotFoundException('Cargo "Cliente" não encontrado. Crie-o primeiro.');
     }
 
-    if (creatorCargoDesc && creatorCargoDesc.toLowerCase() !== 'cliente') {
-      createUsuarioDto.codigoEmpresaId = creatorCompanyId;
-    } else {
-      createUsuarioDto.codigoEmpresaId = null;
-    }
+    createUsuarioDto.codigoEmpresaId = createUsuarioDto.codigoEmpresaId;
     createUsuarioDto.codigoCargoId = clienteCargo.id;
     return this.usuarioService.create(createUsuarioDto);
   }
