@@ -26,7 +26,7 @@ export class CreateEmpresaDto implements AuditableDto {
   @MaxLength(20, { message: 'O telefone deve ter no máximo 20 caracteres.' })
   telefone: string;
 
-  @IsNotEmpty({ message: 'A sigla é obrigatória.' })
+  @IsOptional()
   @IsAlphanumeric('pt-BR', { message: 'A sigla deve conter apenas letras e números.' })
   @MaxLength(10, { message: 'A sigla deve ter no máximo 10 caracteres.' })
   sigla: string;

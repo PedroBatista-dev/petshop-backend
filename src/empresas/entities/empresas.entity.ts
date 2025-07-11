@@ -22,7 +22,7 @@ export class Empresas extends BaseEntityAuditoria { // Herda da classe base
   @Column()
   telefone: string; // Telefone (obrigatorio)
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   sigla: string; // Sigla (obrigatorio)
 
   @Column({ nullable: true })

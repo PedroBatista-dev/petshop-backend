@@ -1,5 +1,5 @@
 // src/auth/auth.service.ts
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsuarioService } from '../usuario/usuario.service';
 import { CargoService } from '../cargo/cargo.service';
@@ -10,14 +10,19 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailService } from '../common/services/email.service';
 import { v4 as uuid } from 'uuid';
 import { Usuario } from '../usuario/entities/usuario.entity';
+import { CreateEmpresaDto } from '../empresas/dto/create-empresa.dto';
+import { EmpresasService } from '../empresas/empresas.service';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usuarioService: UsuarioService,
+    private empresaService: EmpresasService,
     private cargoService: CargoService,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private dataSource: DataSource,
   ) {}
 
   async validateUsuario(email: string, pass: string): Promise<any> {
@@ -120,6 +125,62 @@ export class AuthService {
     createUsuarioDto.codigoCargoId = clienteCargo.id;
     return this.usuarioService.create(createUsuarioDto);
   }
+  
+  async registerEmpresa(createEmpresaDto: CreateEmpresaDto) {
+    const queryRunner = this.dataSource.createQueryRunner(); // Cria um queryRunner
+    await queryRunner.connect(); // Conecta o queryRunner ao banco
+
+    await queryRunner.startTransaction(); // Inicia a transação
+
+    try {
+      const adminCargo = await this.cargoService.findOneByDescricao('Admin');
+      if (!adminCargo) {
+        throw new NotFoundException('Cargo "Admin" não encontrado. Crie-o primeiro.');
+      }
+
+      const empresa = await this.empresaService.createWithQueryRunner(createEmpresaDto, queryRunner);
+
+      const generatedPassword = this.generateRandomPassword();
+      
+      const adminUser = await this.usuarioService.createAdmin(
+        empresa,
+        adminCargo.id,
+        empresa.email,
+        generatedPassword,
+        empresa.createdAt,
+        queryRunner
+      );
+      
+      await this.emailService.sendCreateEmpresaEmail(empresa.email, adminUser.email, generatedPassword);
+  
+      await queryRunner.commitTransaction();
+
+      return empresa;
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction(); // Desfaz a transação em caso de erro
+      if (error instanceof NotFoundException || error instanceof ConflictException || error instanceof BadRequestException) {
+        throw error; // Propaga erros de validação/negócio para o frontend
+      }
+      // Loga o erro interno e lança uma exceção genérica para o frontend
+      console.error('Erro ao registrar empresa e admin (transação desfeita):', error);
+      throw new InternalServerErrorException('Não foi possível registrar a empresa e o usuário admin. Tente novamente mais tarde.');
+
+    } finally {
+      await queryRunner.release(); // Libera o queryRunner
+    }
+
+  }
+
+  private generateRandomPassword(): string {
+    const length = 12;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+    let password = "";
+    for (let i = 0, n = charset.length; i < length; ++i) {
+      password += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return password;
+  }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
     const usuario = await this.usuarioService.findOneByEmail(forgotPasswordDto.email);
@@ -133,7 +194,7 @@ export class AuthService {
 
     await this.usuarioService.updateResetToken(usuario.id, resetToken, resetExpires);
 
-    const resetLink = `http://localhost:4200/reset-password?token=${resetToken}`;
+    const resetLink = `http://localhost:4200/auth/reset-password?token=${resetToken}`;
     await this.emailService.sendPasswordResetEmail(usuario.email, resetLink);
   }
 

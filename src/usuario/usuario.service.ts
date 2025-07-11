@@ -1,12 +1,15 @@
 // src/usuario/usuario.service.ts
 import { ConflictException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Usuario } from './entities/usuario.entity';
+import { QueryRunner, Repository } from 'typeorm';
+import { EstadoCivil, Sexo, Usuario } from './entities/usuario.entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { CargoService } from '../cargo/cargo.service';
 import { EmpresasService } from '../empresas/empresas.service';
+
+import * as moment from 'moment';
+import { Empresas } from '../empresas/entities/empresas.entity';
 
 @Injectable()
 export class UsuarioService {
@@ -26,56 +29,57 @@ export class UsuarioService {
     if (existingUserByCpf) {
       throw new ConflictException('Este CPF já está em uso.');
     }
-
+    const empresa = await this.empresasService.findOneById(createUsuarioDto.codigoEmpresaId);
+    if (!empresa) {
+      throw new NotFoundException('Empresa para o cliente não encontrada.');
+    }
     const cargo = await this.cargoService.findOneById(createUsuarioDto.codigoCargoId);
     if (!cargo) {
       throw new NotFoundException('Cargo não encontrado.');
     }
 
-    // Lógica de negócios para associação de empresa com base no cargo
-    const cargoDescricao = cargo.descricao.toLowerCase();
-
-    if (cargoDescricao === 'dono_master') {
-      if (createUsuarioDto.codigoEmpresaId) {
-        throw new BadRequestException('Um DONO_MASTER não pode estar vinculado a uma empresa.');
-      }
-      const existingMaster = await this.usuariosRepository.findOne({
-        where: { codigoCargoId: cargo.id },
-      });
-      if (existingMaster) {
-        throw new ConflictException('Já existe um DONO_MASTER no sistema. Não é permitido criar mais de um.');
-      }
-    } else if (cargoDescricao !== 'cliente') { // Dono_Empresa, Gerente, Funcionario DEVEM ter uma empresa
-      if (!createUsuarioDto.codigoEmpresaId) {
-        throw new BadRequestException(`Usuários com o cargo '${cargo.descricao}' devem ter um Código da Empresa.`);
-      }
-      const empresa = await this.empresasService.findOneById(createUsuarioDto.codigoEmpresaId);
-      if (!empresa) {
-        throw new NotFoundException('Empresa não encontrada.');
-      }
-      // Regra específica: apenas um 'Dono Empresa' por empresa
-      if (cargoDescricao === 'dono empresa') {
-        const existingDonoEmpresa = await this.usuariosRepository.findOne({
-          where: { codigoCargoId: cargo.id, codigoEmpresaId: createUsuarioDto.codigoEmpresaId },
-        });
-        if (existingDonoEmpresa) {
-          throw new ConflictException(`Já existe um 'Dono Empresa' para a empresa com ID ${createUsuarioDto.codigoEmpresaId}.`);
-        }
-      }
-    } else { // 'Cliente' pode opcionalmente ter uma empresa ou ser avulso
-      if (createUsuarioDto.codigoEmpresaId) {
-        const empresa = await this.empresasService.findOneById(createUsuarioDto.codigoEmpresaId);
-        if (!empresa) {
-          throw new NotFoundException('Empresa para o cliente não encontrada.');
-        }
-      }
-    }
-
     const newUsuario = this.usuariosRepository.create(createUsuarioDto);
     newUsuario.passwordHash = await Usuario.hashPassword(createUsuarioDto.password);
-    newUsuario.dataNascimento = new Date(createUsuarioDto.dataNascimento); // Converte a string da data para objeto Date
+    newUsuario.dataNascimento = moment(createUsuarioDto.dataNascimento, 'YYYY-MM-DD').toDate();
 
     return this.usuariosRepository.save(newUsuario);
+  }
+  
+  async createAdmin(empresa: Empresas, cargoId: string, email: string, generatedPassword: string, empresaCreatedAt: Date, queryRunner: QueryRunner): Promise<Usuario> {
+    const repository = queryRunner.manager.getRepository(Usuario);
+    
+    if (!empresa) {
+      throw new NotFoundException('Erro ao criar Empresa.');
+    }
+
+    const existingUserByEmail = await repository.findOne({ where: { email: email } }); // Usa repositório da transação
+    if (existingUserByEmail) {
+      throw new ConflictException('Este e-mail já está em uso para outro usuário.');
+    }
+
+    const cargo = await this.cargoService.findOneById(cargoId); // OK para não usar queryRunner aqui
+    if (!cargo) {
+      throw new NotFoundException('Cargo não encontrado.');
+    }
+
+    const userAdminDto: CreateUsuarioDto = {
+      nomeCompleto: `Admin ${empresa.razaoSocial}`, // Nome mais descritivo
+      cpf: '00000000000', // Gerar CPF placeholder
+      dataNascimento: moment(empresaCreatedAt).format('YYYY-MM-DD'), // Data de nascimento padrão
+      sexo: Sexo.OUTRO, // Sexo padrão
+      estadoCivil: EstadoCivil.SOLTEIRO, // Estado civil padrão
+      telefone: '00000000000', // Telefone padrão
+      email: email, // Email da empresa
+      password: generatedPassword, // Senha gerada
+      codigoCargoId: cargoId,
+      codigoEmpresaId: empresa.id,
+    };
+
+    const newUsuario = repository.create(userAdminDto);
+    newUsuario.passwordHash = await Usuario.hashPassword(userAdminDto.password);
+    newUsuario.dataNascimento = moment(userAdminDto.dataNascimento, 'YYYY-MM-DD').toDate();
+
+    return repository.save(newUsuario);
   }
 
   async findOneByEmail(email: string): Promise<Usuario | undefined> {

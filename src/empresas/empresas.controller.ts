@@ -18,7 +18,6 @@ export class EmpresasController {
     return this.empresasService.create(createEmpresaDto);
   }
 
-  @Roles('dono_master') // Apenas DONO_MASTER pode listar todas as empresas
   @Get()
   async findAll() {
     return this.empresasService.findAll();

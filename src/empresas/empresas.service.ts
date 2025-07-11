@@ -1,7 +1,7 @@
 // src/empresas/empresas.service.ts
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { Empresas } from './entities/empresas.entity';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
 import { UpdateEmpresaDto } from './dto/update-empresa.dto'; // Importe
@@ -22,13 +22,45 @@ export class EmpresasService {
     if (existingCnpj) {
       throw new ConflictException('Já existe uma empresa com este CNPJ.');
     }
-    const existingSigla = await this.empresasRepository.findOne({ where: { sigla: createEmpresaDto.sigla } });
-    if (existingSigla) {
-      throw new ConflictException('Já existe uma empresa com esta sigla.');
+    const existingEmail = await this.empresasRepository.findOne({ where: { email: createEmpresaDto.email } });
+    if (existingEmail) {
+      throw new ConflictException('Já existe uma empresa com este e-mail.');
+    }
+    if (createEmpresaDto.sigla) {
+      const existingSigla = await this.empresasRepository.findOne({ where: { sigla: createEmpresaDto.sigla } });
+      if (existingSigla) {
+        throw new ConflictException('Já existe uma empresa com esta sigla.');
+      }
     }
 
     const newEmpresa = this.empresasRepository.create(createEmpresaDto);
     return this.empresasRepository.save(newEmpresa);
+  }
+
+  async createWithQueryRunner(createEmpresaDto: CreateEmpresaDto, queryRunner: QueryRunner): Promise<Empresas> {
+    const repository = queryRunner.manager.getRepository(Empresas); // Usa o repositório da transação
+
+    const existingRazaoSocial = await repository.findOne({ where: { razaoSocial: createEmpresaDto.razaoSocial } });
+    if (existingRazaoSocial) {
+      throw new ConflictException('Já existe uma empresa com esta razão social.');
+    }
+    const existingCnpj = await repository.findOne({ where: { cnpj: createEmpresaDto.cnpj } });
+    if (existingCnpj) {
+      throw new ConflictException('Já existe uma empresa com este CNPJ.');
+    }
+    const existingEmail = await repository.findOne({ where: { email: createEmpresaDto.email } });
+    if (existingEmail) { // Adicionado validação de e-mail da empresa
+        throw new ConflictException('Já existe uma empresa com este e-mail.');
+    }
+    if (createEmpresaDto.sigla) {
+      const existingSigla = await repository.findOne({ where: { sigla: createEmpresaDto.sigla } });
+      if (existingSigla) {
+        throw new ConflictException('Já existe uma empresa com esta sigla.');
+      }
+    }
+
+    const newEmpresa = repository.create(createEmpresaDto); // Usa o repositório da transação
+    return repository.save(newEmpresa); // Usa o repositório da transação
   }
 
   async findOneById(id: string): Promise<Empresas | undefined> {

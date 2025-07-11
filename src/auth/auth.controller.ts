@@ -8,6 +8,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { CreateEmpresaDto } from '../empresas/dto/create-empresa.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -51,6 +52,11 @@ export class AuthController {
       return this.authService.registerCliente(createUsuarioDto, req.user.cargoDescricao, req.user.codigoEmpresaId);
     }
     return this.authService.registerCliente(createUsuarioDto);
+  }
+  
+  @Post('register/empresa')
+  async registerEmpresa(@Body() createEmpresaDto: CreateEmpresaDto) {
+    return this.authService.registerEmpresa(createEmpresaDto);
   }
 
   @UseGuards(JwtAuthGuard)

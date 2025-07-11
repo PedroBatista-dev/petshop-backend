@@ -9,10 +9,12 @@ import { CargoModule } from '../cargo/cargo.module';
 import { JwtStrategy } from './jwt.strategy';
 import { CommonModule } from '../common/common.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EmpresasModule } from '../empresas/empresas.module';
 
 @Module({
   imports: [
     UsuarioModule,
+    EmpresasModule,
     CargoModule,
     PassportModule,
     JwtModule.registerAsync({
