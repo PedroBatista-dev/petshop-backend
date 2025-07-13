@@ -1,11 +1,11 @@
 // src/usuario/entities/usuario.entity.ts
 import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
-import { Empresas } from '../../empresas/entities/empresas.entity';
-import { Cargo } from '../../cargo/entities/cargo.entity';
+import { Empresa } from '../../empresas/entities/empresa.entity';
+import { Cargo } from '../../cargos/entities/cargo.entity';
 import { BaseEntityAuditoria } from '../../common/entities/base-entity-auditoria.entity'; // Importe
 import * as bcrypt from 'bcrypt';
-import { Contatos } from '../../contatos/entities/contatos.entity';
-import { Enderecos } from '../../enderecos/entities/enderecos.entity';
+import { Contato } from '../../contatos/entities/contato.entity';
+import { Endereco } from '../../enderecos/entities/endereco.entity';
 
 export enum Sexo {
   MASCULINO = 'M',
@@ -54,24 +54,24 @@ export class Usuario extends BaseEntityAuditoria { // Herda da classe base
   resetPasswordExpires: Date; // Validade do token
 
   @Column({ nullable: true }) // CódigoCargo (obrigatório) - ID do cargo
-  codigoCargoId: string;
+  idCargo: string;
 
   @ManyToOne(() => Cargo, cargo => cargo.usuarios, { onDelete: 'RESTRICT' }) // Não permite deletar cargo se houver usuário associado
-  @JoinColumn({ name: 'codigoCargoId' })
+  @JoinColumn({ name: 'idCargo' })
   cargo: Cargo;
 
   @Column({ nullable: true }) // Vinculo com Empresa (pode ser nulo para DONO_MASTER ou CLIENTE avulso)
-  codigoEmpresaId: string;
+  idEmpresa: string;
 
-  @ManyToOne(() => Empresas, empresa => empresa.usuarios, { onDelete: 'SET NULL' }) // Se a empresa for deletada, o usuário fica sem empresa
-  @JoinColumn({ name: 'codigoEmpresaId' })
-  empresa: Empresas;
+  @ManyToOne(() => Empresa, empresa => empresa.usuarios, { onDelete: 'SET NULL' }) // Se a empresa for deletada, o usuário fica sem empresa
+  @JoinColumn({ name: 'idEmpresa' })
+  empresa: Empresa;
 
-  @OneToMany(() => Contatos, contato => contato.usuario)
-  contatos: Contatos[];
+  @OneToMany(() => Contato, contato => contato.usuario)
+  contatos: Contato[];
 
-  @OneToMany(() => Enderecos, endereco => endereco.usuario)
-  enderecos: Enderecos[];
+  @OneToMany(() => Endereco, endereco => endereco.usuario)
+  enderecos: Endereco[];
 
   async comparePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.passwordHash);

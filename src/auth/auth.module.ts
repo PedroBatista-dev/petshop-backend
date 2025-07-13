@@ -4,8 +4,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsuarioModule } from '../usuario/usuario.module';
-import { CargoModule } from '../cargo/cargo.module';
+import { UsuariosModule } from '../usuario/usuarios.module';
+import { CargosModule } from '../cargos/cargos.module';
 import { JwtStrategy } from './jwt.strategy';
 import { CommonModule } from '../common/common.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -13,9 +13,9 @@ import { EmpresasModule } from '../empresas/empresas.module';
 
 @Module({
   imports: [
-    UsuarioModule,
+    UsuariosModule,
     EmpresasModule,
-    CargoModule,
+    CargosModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule], 

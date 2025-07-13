@@ -3,13 +3,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { UsuarioService } from '../usuario/usuario.service';
+import { UsuariosService } from '../usuario/usuarios.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private configService: ConfigService,
-    private usuarioService: UsuarioService,
+    private usuarioService: UsuariosService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,16 +18,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string; email: string; cargoDescricao: string; codigoEmpresaId?: string }) {
-    const usuario = await this.usuarioService.findOneById(payload.sub);
+  async validate(payload: { sub: string; email: string; descricaoCargo: string; idEmpresa: string }) {
+    const usuario = await this.usuarioService.findOneById(payload.sub, payload.idEmpresa);
     if (!usuario) {
       throw new UnauthorizedException('Usuário não encontrado ou token inválido.');
     }
     return {
-      userId: usuario.id,
+      id: usuario.id,
       email: usuario.email,
-      cargoDescricao: usuario.cargo.descricao,
-      codigoEmpresaId: usuario.codigoEmpresaId,
+      descricaoCargo: usuario.cargo.descricao,
+      idEmpresa: usuario.idEmpresa,
     };
   }
 }

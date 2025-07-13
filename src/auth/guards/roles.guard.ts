@@ -14,18 +14,16 @@ export class RolesGuard implements CanActivate {
     ]);
 
     if (!requiredRoles) {
-      return true; // Nenhuma role definida, acesso público
+      return true; 
     }
 
     const { user } = context.switchToHttp().getRequest();
-    if (!user || !user.cargoDescricao) {
+    if (!user || !user.descricaoCargo) {
       throw new UnauthorizedException('Usuário não autenticado ou sem cargo definido.');
     }
 
-    // Converte a descrição do cargo do usuário para minúsculas para comparação consistente
-    const userRoleLower = user.cargoDescricao.toLowerCase();
+    const userRoleLower = user.descricaoCargo.toLowerCase();
 
-    // Verifica se o cargo do usuário está na lista de cargos necessários
     if (requiredRoles.some((role) => userRoleLower === role.toLowerCase())) {
       return true;
     }

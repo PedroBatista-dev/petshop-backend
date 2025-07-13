@@ -1,8 +1,8 @@
 // src/auth/auth.service.ts
 import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsuarioService } from '../usuario/usuario.service';
-import { CargoService } from '../cargo/cargo.service';
+import { UsuariosService } from '../usuario/usuarios.service';
+import { CargosService } from '../cargos/cargos.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { CreateUsuarioDto } from '../usuario/dto/create-usuario.dto'; // Importa o DTO de usuário
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -17,9 +17,9 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(
-    private usuarioService: UsuarioService,
+    private usuarioService: UsuariosService,
     private empresaService: EmpresasService,
-    private cargoService: CargoService,
+    private cargoService: CargosService,
     private jwtService: JwtService,
     private emailService: EmailService,
     private dataSource: DataSource,
@@ -29,7 +29,7 @@ export class AuthService {
     const usuario = await this.usuarioService.findOneByEmail(email);
     if (usuario && (await usuario.comparePassword(pass))) {
       const { passwordHash, resetPasswordToken, resetPasswordExpires, ...result } = usuario;
-      return { ...result, cargoDescricao: usuario.cargo.descricao };
+      return { ...result, descricaoCargo: usuario.cargo.descricao };
     }
     return null;
   }
@@ -43,93 +43,33 @@ export class AuthService {
     const payload = {
       email: usuario.email,
       sub: usuario.id,
-      cargoDescricao: usuario.cargoDescricao,
-      codigoEmpresaId: usuario.codigoEmpresaId,
+      descricaoCargo: usuario.descricaoCargo,
+      idEmpresa: usuario.idEmpresa,
     };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  // --- Endpoints de Registro Controlado por Cargos ---
-
-  async registerMasterOwner(createUsuarioDto: CreateUsuarioDto) {
-    const masterCargo = await this.cargoService.findOneByDescricao('Dono_Master');
-    if (!masterCargo) {
-      throw new NotFoundException('Cargo "Dono_Master" não encontrado. Crie-o primeiro.');
-    }
-    const existingMasterOwner = await this.usuarioService.findAll().then(users =>
-      users.find(u => u.cargo?.descricao.toLowerCase() === 'dono_master')
-    );
-    if (existingMasterOwner) {
-      throw new ConflictException('Já existe um DONO_MASTER no sistema.');
-    }
-    createUsuarioDto.codigoCargoId = masterCargo.id;
-    createUsuarioDto.codigoEmpresaId = null;
-    return this.usuarioService.create(createUsuarioDto);
-  }
-
-  async registerDonoEmpresa(createUsuarioDto: CreateUsuarioDto, creatorCargoDesc: string) {
-    if (creatorCargoDesc.toLowerCase() !== 'dono_master') {
-      throw new UnauthorizedException('Apenas o DONO_MASTER pode cadastrar novos DONOS de empresas.');
-    }
-    const donoEmpresaCargo = await this.cargoService.findOneByDescricao('Dono Empresa');
-    if (!donoEmpresaCargo) {
-      throw new NotFoundException('Cargo "Dono Empresa" não encontrado. Crie-o primeiro.');
-    }
-    createUsuarioDto.codigoCargoId = donoEmpresaCargo.id;
-    return this.usuarioService.create(createUsuarioDto);
-  }
-
-  async registerGerente(createUsuarioDto: CreateUsuarioDto, creatorCargoDesc: string, creatorCompanyId: string) {
-    if (creatorCargoDesc.toLowerCase() !== 'dono_master' && creatorCargoDesc.toLowerCase() !== 'dono empresa') {
-      throw new UnauthorizedException('Apenas DONO_MASTER ou DONOS de empresas podem cadastrar gerentes.');
-    }
-    const gerenteCargo = await this.cargoService.findOneByDescricao('Gerente');
-    if (!gerenteCargo) {
-      throw new NotFoundException('Cargo "Gerente" não encontrado. Crie-o primeiro.');
-    }
-    if (creatorCargoDesc.toLowerCase() === 'dono empresa' && createUsuarioDto.codigoEmpresaId !== creatorCompanyId) {
-      throw new BadRequestException('Um DONO de empresa só pode cadastrar gerentes para sua própria empresa.');
-    }
-    createUsuarioDto.codigoCargoId = gerenteCargo.id;
-    return this.usuarioService.create(createUsuarioDto);
-  }
-
-  async registerFuncionario(createUsuarioDto: CreateUsuarioDto, creatorCargoDesc: string, creatorCompanyId: string) {
-    if (creatorCargoDesc.toLowerCase() !== 'dono_master' && creatorCargoDesc.toLowerCase() !== 'dono empresa' && creatorCargoDesc.toLowerCase() !== 'gerente') {
-      throw new UnauthorizedException('Apenas DONO_MASTER, DONOS de empresas ou Gerentes podem cadastrar funcionários.');
-    }
-    const funcionarioCargo = await this.cargoService.findOneByDescricao('Funcionario');
-    if (!funcionarioCargo) {
-      throw new NotFoundException('Cargo "Funcionario" não encontrado. Crie-o primeiro.');
-    }
-    if ((creatorCargoDesc.toLowerCase() === 'dono empresa' || creatorCargoDesc.toLowerCase() === 'gerente') && createUsuarioDto.codigoEmpresaId !== creatorCompanyId) {
-      throw new BadRequestException('Você só pode cadastrar funcionários para sua própria empresa.');
-    }
-    createUsuarioDto.codigoCargoId = funcionarioCargo.id;
-    return this.usuarioService.create(createUsuarioDto);
-  }
-
   async registerCliente(createUsuarioDto: CreateUsuarioDto) {
-    const clienteCargo = await this.cargoService.findOneByDescricao('Cliente');
+    const clienteCargo = await this.cargoService.findOneByDescricao('Cliente', false, createUsuarioDto.idEmpresa);
     if (!clienteCargo) {
       throw new NotFoundException('Cargo "Cliente" não encontrado. Crie-o primeiro.');
     }
 
-    createUsuarioDto.codigoEmpresaId = createUsuarioDto.codigoEmpresaId;
-    createUsuarioDto.codigoCargoId = clienteCargo.id;
+    createUsuarioDto.idEmpresa = createUsuarioDto.idEmpresa;
+    createUsuarioDto.idCargo = clienteCargo.id;
     return this.usuarioService.create(createUsuarioDto);
   }
   
   async registerEmpresa(createEmpresaDto: CreateEmpresaDto) {
-    const queryRunner = this.dataSource.createQueryRunner(); // Cria um queryRunner
-    await queryRunner.connect(); // Conecta o queryRunner ao banco
+    const queryRunner = this.dataSource.createQueryRunner(); 
+    await queryRunner.connect(); 
 
-    await queryRunner.startTransaction(); // Inicia a transação
+    await queryRunner.startTransaction(); 
 
     try {
-      const adminCargo = await this.cargoService.findOneByDescricao('Admin');
+      const adminCargo = await this.cargoService.findOneByDescricao('Admin', false);
       if (!adminCargo) {
         throw new NotFoundException('Cargo "Admin" não encontrado. Crie-o primeiro.');
       }

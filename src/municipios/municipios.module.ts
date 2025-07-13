@@ -1,15 +1,15 @@
 // src/municipio/municipio.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MunicipioService } from './municipio.service';
-import { MunicipioController } from './municipio.controller';
+import { MunicipiosService } from './municipios.service';
+import { MunicipiosController } from './municipios.controller';
 import { Municipio } from './entities/municipio.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Municipio]), AuthModule],
-  controllers: [MunicipioController],
-  providers: [MunicipioService],
-  exports: [MunicipioService],
+  controllers: [MunicipiosController],
+  providers: [MunicipiosService],
+  exports: [MunicipiosService],
 })
-export class MunicipioModule {}
+export class MunicipiosModule {}

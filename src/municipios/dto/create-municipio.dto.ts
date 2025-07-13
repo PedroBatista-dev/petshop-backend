@@ -1,5 +1,5 @@
 // src/municipio/dto/create-municipio.dto.ts
-import { IsNotEmpty, IsString, MaxLength, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsOptional, IsUUID } from 'class-validator';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateMunicipioDto implements AuditableDto {
@@ -17,6 +17,10 @@ export class CreateMunicipioDto implements AuditableDto {
   @IsString({ message: 'O código IBGE deve ser uma string.' })
   @MaxLength(20, { message: 'O código IBGE deve ter no máximo 20 caracteres.' })
   codigoIbge?: string;
+
+  @IsOptional()
+  @IsUUID('4', { message: 'Código da empresa inválido.' })
+  idEmpresa?: string;
 
   @IsOptional()
   @IsString()

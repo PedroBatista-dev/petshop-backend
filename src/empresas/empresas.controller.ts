@@ -1,43 +1,28 @@
-// src/empresas/empresas.controller.ts
 import { Controller, Post, Body, Get, Param, UseGuards, Patch, HttpCode, HttpStatus, Delete } from '@nestjs/common';
 import { EmpresasService } from './empresas.service';
-import { CreateEmpresaDto } from './dto/create-empresa.dto';
-import { UpdateEmpresaDto } from './dto/update-empresa.dto'; // Importe
+import { UpdateEmpresaDto } from './dto/update-empresa.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('empresas')
 export class EmpresasController {
   constructor(private readonly empresasService: EmpresasService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('dono_master') // Apenas DONO_MASTER pode criar empresas
-  @Post()
-  async create(@Body() createEmpresaDto: CreateEmpresaDto) {
-    return this.empresasService.create(createEmpresaDto);
-  }
-
-  @Get()
-  async findAll() {
-    return this.empresasService.findAll();
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Get(':id') // Qualquer usuário autenticado pode visualizar uma empresa específica (se permitido pela lógica de negócios)
+  @Roles('admin')
+  @Get(':id') 
   async findOne(@Param('id') id: string) {
     return this.empresasService.findOneById(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('dono_master') // Apenas DONO_MASTER pode alterar empresas
+  @Roles('admin')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateEmpresaDto: UpdateEmpresaDto) {
     return this.empresasService.update(id, updateEmpresaDto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('dono_master') // Apenas DONO_MASTER pode remover empresas
+  @Roles('admin')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string) {

@@ -1,15 +1,15 @@
 // src/cargo/cargo.module.ts
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CargoService } from './cargo.service';
-import { CargoController } from './cargo.controller';
+import { CargosService } from './cargos.service';
+import { CargosController } from './cargos.controller';
 import { Cargo } from './entities/cargo.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Cargo]), forwardRef(() => AuthModule)],
-  controllers: [CargoController],
-  providers: [CargoService],
-  exports: [CargoService],
+  controllers: [CargosController],
+  providers: [CargosService],
+  exports: [CargosService],
 })
-export class CargoModule {}
+export class CargosModule {}

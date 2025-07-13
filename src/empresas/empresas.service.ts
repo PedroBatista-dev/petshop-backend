@@ -2,43 +2,19 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryRunner, Repository } from 'typeorm';
-import { Empresas } from './entities/empresas.entity';
+import { Empresa } from './entities/empresa.entity';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
-import { UpdateEmpresaDto } from './dto/update-empresa.dto'; // Importe
+import { UpdateEmpresaDto } from './dto/update-empresa.dto';
 
 @Injectable()
 export class EmpresasService {
   constructor(
-    @InjectRepository(Empresas)
-    private empresasRepository: Repository<Empresas>,
+    @InjectRepository(Empresa)
+    private empresasRepository: Repository<Empresa>,
   ) {}
 
-  async create(createEmpresaDto: CreateEmpresaDto): Promise<Empresas> {
-    const existingRazaoSocial = await this.empresasRepository.findOne({ where: { razaoSocial: createEmpresaDto.razaoSocial } });
-    if (existingRazaoSocial) {
-      throw new ConflictException('Já existe uma empresa com esta razão social.');
-    }
-    const existingCnpj = await this.empresasRepository.findOne({ where: { cnpj: createEmpresaDto.cnpj } });
-    if (existingCnpj) {
-      throw new ConflictException('Já existe uma empresa com este CNPJ.');
-    }
-    const existingEmail = await this.empresasRepository.findOne({ where: { email: createEmpresaDto.email } });
-    if (existingEmail) {
-      throw new ConflictException('Já existe uma empresa com este e-mail.');
-    }
-    if (createEmpresaDto.sigla) {
-      const existingSigla = await this.empresasRepository.findOne({ where: { sigla: createEmpresaDto.sigla } });
-      if (existingSigla) {
-        throw new ConflictException('Já existe uma empresa com esta sigla.');
-      }
-    }
-
-    const newEmpresa = this.empresasRepository.create(createEmpresaDto);
-    return this.empresasRepository.save(newEmpresa);
-  }
-
-  async createWithQueryRunner(createEmpresaDto: CreateEmpresaDto, queryRunner: QueryRunner): Promise<Empresas> {
-    const repository = queryRunner.manager.getRepository(Empresas); // Usa o repositório da transação
+  async createWithQueryRunner(createEmpresaDto: CreateEmpresaDto, queryRunner: QueryRunner): Promise<Empresa> {
+    const repository = queryRunner.manager.getRepository(Empresa); 
 
     const existingRazaoSocial = await repository.findOne({ where: { razaoSocial: createEmpresaDto.razaoSocial } });
     if (existingRazaoSocial) {
@@ -59,19 +35,15 @@ export class EmpresasService {
       }
     }
 
-    const newEmpresa = repository.create(createEmpresaDto); // Usa o repositório da transação
-    return repository.save(newEmpresa); // Usa o repositório da transação
+    const newEmpresa = repository.create(createEmpresaDto); 
+    return repository.save(newEmpresa); 
   }
 
-  async findOneById(id: string): Promise<Empresas | undefined> {
+  async findOneById(id: string): Promise<Empresa | undefined> {
     return this.empresasRepository.findOne({ where: { id } });
   }
 
-  async findAll(): Promise<Empresas[]> {
-    return this.empresasRepository.find();
-  }
-
-  async update(id: string, updateEmpresaDto: UpdateEmpresaDto): Promise<Empresas> {
+  async update(id: string, updateEmpresaDto: UpdateEmpresaDto): Promise<Empresa> {
     const empresa = await this.findOneById(id);
     if (!empresa) {
       throw new NotFoundException('Empresa não encontrada.');

@@ -1,6 +1,6 @@
 // src/enderecos/dto/create-endereco.dto.ts
 import { IsNotEmpty, IsString, MaxLength, IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { PrincipalEndereco, TipoEndereco } from '../entities/enderecos.entity';
+import { PrincipalEndereco, TipoEndereco } from '../entities/endereco.entity';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateEnderecoDto implements AuditableDto {
@@ -39,19 +39,19 @@ export class CreateEnderecoDto implements AuditableDto {
 
   @IsNotEmpty({ message: 'O código do país é obrigatório.' })
   @IsUUID('4', { message: 'Código do país inválido.' })
-  codigoPaisId: string;
+  idPais: string;
 
   @IsNotEmpty({ message: 'O código do município é obrigatório.' })
   @IsUUID('4', { message: 'Código do município inválido.' })
-  codigoMunicipioId: string;
+  idMunicipio: string;
 
   @IsOptional()
   @IsUUID('4', { message: 'Código da empresa inválido.' })
-  codigoEmpresaId?: string;
+  idEmpresa?: string;
 
   @IsOptional()
   @IsUUID('4', { message: 'Código do usuário inválido.' })
-  codigoUsuarioId?: string;
+  idUsuario?: string;
 
   @IsOptional()
   @IsString()

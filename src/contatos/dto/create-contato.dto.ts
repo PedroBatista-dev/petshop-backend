@@ -1,6 +1,6 @@
 // src/contatos/dto/create-contato.dto.ts
 import { IsNotEmpty, IsString, MaxLength, IsEmail, IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { Principal } from '../entities/contatos.entity';
+import { Principal } from '../entities/contato.entity';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateContatoDto implements AuditableDto {
@@ -24,11 +24,11 @@ export class CreateContatoDto implements AuditableDto {
 
   @IsOptional()
   @IsUUID('4', { message: 'Código da empresa inválido.' })
-  codigoEmpresaId?: string;
+  idEmpresa?: string;
 
   @IsOptional()
   @IsUUID('4', { message: 'Código do usuário inválido.' })
-  codigoUsuarioId?: string;
+  idUsuario?: string;
 
   @IsOptional()
   @IsString()

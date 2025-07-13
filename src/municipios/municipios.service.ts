@@ -7,33 +7,33 @@ import { CreateMunicipioDto } from './dto/create-municipio.dto';
 import { UpdateMunicipioDto } from './dto/update-municipio.dto'; // Importe
 
 @Injectable()
-export class MunicipioService {
+export class MunicipiosService {
   constructor(
     @InjectRepository(Municipio)
     private municipiosRepository: Repository<Municipio>,
   ) {}
 
-  async create(createMunicipioDto: CreateMunicipioDto): Promise<Municipio> {
+  async create(createMunicipioDto: CreateMunicipioDto, idEmpresa: string): Promise<Municipio> {
     const existingMunicipio = await this.municipiosRepository.findOne({
-      where: { descricao: createMunicipioDto.descricao, estado: createMunicipioDto.estado },
+      where: { descricao: createMunicipioDto.descricao, estado: createMunicipioDto.estado, idEmpresa },
     });
     if (existingMunicipio) {
       throw new ConflictException('Já existe um município com esta descrição e estado.');
     }
-    const newMunicipio = this.municipiosRepository.create(createMunicipioDto);
-    return this.municipiosRepository.save(newMunicipio);
+    const novoMunicipio = this.municipiosRepository.create(createMunicipioDto);
+    return this.municipiosRepository.save(novoMunicipio);
   }
 
-  async findOneById(id: string): Promise<Municipio | undefined> {
-    return this.municipiosRepository.findOne({ where: { id } });
+  async findOneById(id: string, idEmpresa: string): Promise<Municipio | undefined> {
+    return this.municipiosRepository.findOne({ where: { id, idEmpresa } });
   }
 
-  async findAll(): Promise<Municipio[]> {
-    return this.municipiosRepository.find();
+  async findAll(idEmpresa: string): Promise<Municipio[]> {
+    return this.municipiosRepository.find({ where: { idEmpresa } });
   }
 
-  async update(id: string, updateMunicipioDto: UpdateMunicipioDto): Promise<Municipio> {
-    const municipio = await this.findOneById(id);
+  async update(id: string, updateMunicipioDto: UpdateMunicipioDto, idEmpresa: string): Promise<Municipio> {
+    const municipio = await this.findOneById(id, idEmpresa);
     if (!municipio) {
       throw new NotFoundException('Município não encontrado.');
     }

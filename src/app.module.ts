@@ -8,19 +8,19 @@ import { AppService } from './app.service';
 
 // Importa todas as entidades
 import { Pais } from './pais/entities/pais.entity';
-import { Municipio } from './municipio/entities/municipio.entity';
-import { Empresas } from './empresas/entities/empresas.entity';
-import { Cargo } from './cargo/entities/cargo.entity';
+import { Municipio } from './municipios/entities/municipio.entity';
+import { Empresa } from './empresas/entities/empresa.entity';
+import { Cargo } from './cargos/entities/cargo.entity';
 import { Usuario } from './usuario/entities/usuario.entity';
-import { Contatos } from './contatos/entities/contatos.entity';
-import { Enderecos } from './enderecos/entities/enderecos.entity';
+import { Contato } from './contatos/entities/contato.entity';
+import { Endereco } from './enderecos/entities/endereco.entity';
 
 // Importa todos os módulos
-import { PaisModule } from './pais/pais.module';
-import { MunicipioModule } from './municipio/municipio.module';
+import { PaisesModule } from './pais/paises.module';
+import { MunicipiosModule } from './municipios/municipios.module';
 import { EmpresasModule } from './empresas/empresas.module';
-import { CargoModule } from './cargo/cargo.module';
-import { UsuarioModule } from './usuario/usuario.module';
+import { CargosModule } from './cargos/cargos.module';
+import { UsuariosModule } from './usuario/usuarios.module';
 import { ContatosModule } from './contatos/contatos.module';
 import { EnderecosModule } from './enderecos/enderecos.module';
 import { AuthModule } from './auth/auth.module';
@@ -43,20 +43,20 @@ import { AuditInterceptor } from './common/audit/audit.interceptor';
       entities: [
         Pais,
         Municipio,
-        Empresas,
+        Empresa,
         Cargo,
         Usuario,
-        Contatos,
-        Enderecos,
+        Contato,
+        Endereco,
       ],
       synchronize: false,
       logging: true,
     }),
-    PaisModule,
-    MunicipioModule,
+    PaisesModule,
+    MunicipiosModule,
     EmpresasModule,
-    CargoModule,
-    UsuarioModule,
+    CargosModule,
+    UsuariosModule,
     ContatosModule,
     EnderecosModule,
     CommonModule,

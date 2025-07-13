@@ -1,10 +1,10 @@
 // src/enderecos/entities/enderecos.entity.ts
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Empresas } from '../../empresas/entities/empresas.entity';
 import { Usuario } from '../../usuario/entities/usuario.entity';
-import { Municipio } from '../../municipio/entities/municipio.entity';
+import { Municipio } from '../../municipios/entities/municipio.entity';
 import { Pais } from '../../pais/entities/pais.entity';
 import { BaseEntityAuditoria } from '../../common/entities/base-entity-auditoria.entity'; // Importe
+import { Empresa } from '../../empresas/entities/empresa.entity';
 
 export enum TipoEndereco {
   RESIDENCIAL = 'Residencial',
@@ -17,7 +17,7 @@ export enum PrincipalEndereco {
 }
 
 @Entity('enderecos')
-export class Enderecos extends BaseEntityAuditoria { // Herda da classe base
+export class Endereco extends BaseEntityAuditoria { // Herda da classe base
   @Column({ type: 'enum', enum: PrincipalEndereco })
   principal: PrincipalEndereco; // Principal (obrigatório, S ou N)
 
@@ -40,30 +40,30 @@ export class Enderecos extends BaseEntityAuditoria { // Herda da classe base
   bairro: string; // Bairro (obrigatório)
 
   @Column()
-  codigoPaisId: string; // CodigoPais (obrigatório)
+  idPais: string; // CodigoPais (obrigatório)
 
   @ManyToOne(() => Pais, pais => pais.enderecos, { onDelete: 'RESTRICT' })
-  @JoinColumn({ name: 'codigoPaisId' })
+  @JoinColumn({ name: 'idPais' })
   pais: Pais;
 
   @Column()
-  codigoMunicipioId: string; // CodigoMunicipio (obrigatório)
+  idMunicipio: string; // CodigoMunicipio (obrigatório)
 
   @ManyToOne(() => Municipio, municipio => municipio.enderecos, { onDelete: 'RESTRICT' })
-  @JoinColumn({ name: 'codigoMunicipioId' })
+  @JoinColumn({ name: 'idMunicipio' })
   municipio: Municipio;
 
   @Column({ nullable: true })
-  codigoEmpresaId: string; // CodigoEmpresa
+  idEmpresa: string; // idEmpresa
 
-  @ManyToOne(() => Empresas, empresa => empresa.enderecos, { onDelete: 'CASCADE', nullable: true })
-  @JoinColumn({ name: 'codigoEmpresaId' })
-  empresa: Empresas;
+  @ManyToOne(() => Empresa, empresa => empresa.enderecos, { onDelete: 'CASCADE', nullable: true })
+  @JoinColumn({ name: 'idEmpresa' })
+  empresa: Empresa;
 
   @Column({ nullable: true })
-  codigoUsuarioId: string; // CodigoUsuario
+  idUsuario: string; // CodigoUsuario
 
   @ManyToOne(() => Usuario, usuario => usuario.enderecos, { onDelete: 'CASCADE', nullable: true })
-  @JoinColumn({ name: 'codigoUsuarioId' })
+  @JoinColumn({ name: 'idUsuario' })
   usuario: Usuario;
 }
