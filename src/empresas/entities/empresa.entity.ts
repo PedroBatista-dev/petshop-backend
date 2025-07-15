@@ -1,6 +1,6 @@
 // src/empresas/entities/empresas.entity.ts
 import { Entity, Column, OneToMany } from 'typeorm';
-import { BaseEntityAuditoria } from '../../common/entities/base-entity-auditoria.entity'; 
+import { BaseEntityAuditoria } from '../../common/entities/base-entity-auditoria.entity';
 import { Usuario } from '../../usuario/entities/usuario.entity';
 import { Contato } from '../../contatos/entities/contato.entity';
 import { Endereco } from '../../enderecos/entities/endereco.entity';
@@ -9,52 +9,52 @@ import { Municipio } from '../../municipios/entities/municipio.entity';
 import { Cargo } from '../../cargos/entities/cargo.entity';
 
 @Entity('empresas')
-export class Empresa extends BaseEntityAuditoria { 
+export class Empresa extends BaseEntityAuditoria {
   @Column({ unique: true })
-  razaoSocial: string; 
+  razaoSocial: string;
 
   @Column()
-  descricaoEmpresa: string; 
+  descricaoEmpresa: string;
 
   @Column({ unique: true })
-  cnpj: string; 
+  cnpj: string;
 
   @Column()
-  email: string; 
+  email: string;
 
   @Column()
-  telefone: string; 
+  telefone: string;
 
   @Column({ unique: true, nullable: true })
-  sigla: string; 
+  sigla: string;
 
   @Column({ nullable: true })
-  inscricaoMunicipal: string; 
+  inscricaoMunicipal: string;
 
   @Column({ nullable: true })
-  inscricaoEstadual: string; 
+  inscricaoEstadual: string;
 
   @Column({ nullable: true })
-  foto: string; 
+  foto: string;
 
   @Column({ nullable: true })
   observacao: string;
 
-  @OneToMany(() => Usuario, usuario => usuario.empresa)
+  @OneToMany(() => Usuario, (usuario) => usuario.empresa)
   usuarios: Usuario[];
 
-  @OneToMany(() => Contato, contato => contato.empresa)
+  @OneToMany(() => Contato, (contato) => contato.empresa)
   contatos: Contato[];
 
-  @OneToMany(() => Endereco, endereco => endereco.empresa)
+  @OneToMany(() => Endereco, (endereco) => endereco.empresa)
   enderecos: Endereco[];
 
-  @OneToMany(() => Pais, usuario => usuario.empresa)
+  @OneToMany(() => Pais, (usuario) => usuario.empresa)
   paises: Pais[];
 
-  @OneToMany(() => Municipio, usuario => usuario.empresa)
+  @OneToMany(() => Municipio, (usuario) => usuario.empresa)
   municipios: Municipio[];
 
-  @OneToMany(() => Cargo, usuario => usuario.empresa)
+  @OneToMany(() => Cargo, (usuario) => usuario.empresa)
   cargos: Cargo[];
 }

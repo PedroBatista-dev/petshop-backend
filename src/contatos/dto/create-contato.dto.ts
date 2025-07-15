@@ -1,5 +1,13 @@
 // src/contatos/dto/create-contato.dto.ts
-import { IsNotEmpty, IsString, MaxLength, IsEmail, IsEnum, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { Principal } from '../entities/contato.entity';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
@@ -10,12 +18,16 @@ export class CreateContatoDto implements AuditableDto {
 
   @IsNotEmpty({ message: 'O nome do contato é obrigatório.' })
   @IsString({ message: 'O nome do contato deve ser uma string.' })
-  @MaxLength(100, { message: 'O nome do contato deve ter no máximo 100 caracteres.' })
+  @MaxLength(100, {
+    message: 'O nome do contato deve ter no máximo 100 caracteres.',
+  })
   nome: string;
 
   @IsNotEmpty({ message: 'O telefone do contato é obrigatório.' })
   @IsString({ message: 'O telefone do contato deve ser uma string.' })
-  @MaxLength(20, { message: 'O telefone do contato deve ter no máximo 20 caracteres.' })
+  @MaxLength(20, {
+    message: 'O telefone do contato deve ter no máximo 20 caracteres.',
+  })
   telefone: string;
 
   @IsNotEmpty({ message: 'O e-mail do contato é obrigatório.' })

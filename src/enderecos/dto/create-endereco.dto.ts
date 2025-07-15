@@ -1,15 +1,26 @@
 // src/enderecos/dto/create-endereco.dto.ts
-import { IsNotEmpty, IsString, MaxLength, IsEnum, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { PrincipalEndereco, TipoEndereco } from '../entities/endereco.entity';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateEnderecoDto implements AuditableDto {
   @IsNotEmpty({ message: 'O campo Principal é obrigatório (S ou N).' })
-  @IsEnum(PrincipalEndereco, { message: 'Valor inválido para Principal. Use S ou N.' })
+  @IsEnum(PrincipalEndereco, {
+    message: 'Valor inválido para Principal. Use S ou N.',
+  })
   principal: PrincipalEndereco;
 
   @IsNotEmpty({ message: 'O tipo de endereço é obrigatório.' })
-  @IsEnum(TipoEndereco, { message: 'Tipo de endereço inválido. Use Residencial ou Comercial.' })
+  @IsEnum(TipoEndereco, {
+    message: 'Tipo de endereço inválido. Use Residencial ou Comercial.',
+  })
   tipo: TipoEndereco;
 
   @IsNotEmpty({ message: 'O CEP é obrigatório.' })
@@ -19,7 +30,9 @@ export class CreateEnderecoDto implements AuditableDto {
 
   @IsNotEmpty({ message: 'O logradouro é obrigatório.' })
   @IsString({ message: 'O logradouro deve ser uma string.' })
-  @MaxLength(255, { message: 'O logradouro deve ter no máximo 255 caracteres.' })
+  @MaxLength(255, {
+    message: 'O logradouro deve ter no máximo 255 caracteres.',
+  })
   logradouro: string;
 
   @IsNotEmpty({ message: 'O número é obrigatório.' })
@@ -29,7 +42,9 @@ export class CreateEnderecoDto implements AuditableDto {
 
   @IsOptional()
   @IsString({ message: 'O complemento deve ser uma string.' })
-  @MaxLength(100, { message: 'O complemento deve ter no máximo 100 caracteres.' })
+  @MaxLength(100, {
+    message: 'O complemento deve ter no máximo 100 caracteres.',
+  })
   complemento?: string;
 
   @IsNotEmpty({ message: 'O bairro é obrigatório.' })

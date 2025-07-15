@@ -5,7 +5,7 @@ import { BaseEntityAuditoria } from '../../common/entities/base-entity-auditoria
 
 export enum Principal {
   SIM = 'S',
-  NAO = 'N'
+  NAO = 'N',
 }
 
 @Entity('contatos')
@@ -20,19 +20,25 @@ export class Contato extends BaseEntityAuditoria {
   telefone: string;
 
   @Column()
-  email: string; 
+  email: string;
 
   @Column({ nullable: true })
-  idEmpresa: string; 
+  idEmpresa: string;
 
-  @ManyToOne(() => Empresa, empresa => empresa.contatos, { onDelete: 'CASCADE', nullable: true }) 
+  @ManyToOne(() => Empresa, (empresa) => empresa.contatos, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn({ name: 'idEmpresa' })
   empresa: Empresa;
 
   @Column({ nullable: true })
   idUsuario: string;
 
-  @ManyToOne(() => Usuario, usuario => usuario.contatos, { onDelete: 'CASCADE', nullable: true }) 
+  @ManyToOne(() => Usuario, (usuario) => usuario.contatos, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn({ name: 'idUsuario' })
   usuario: Usuario;
 }

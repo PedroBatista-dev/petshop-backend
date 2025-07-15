@@ -18,10 +18,10 @@
       "test:cov": "jest --coverage",
       "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
       "test:e2e": "jest --config ./test/jest-e2e.json",
-      "typeorm": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-      "migration:generate": "npm run typeorm -- migration:generate src/migrations/",
-      "migration:run": "npm run typeorm -- migration:run",
-      "migration:revert": "npm run typeorm -- migration:revert"
+      "typeorm": "typeorm-ts-node-commonjs",
+      "migration:generate": "npm run typeorm -- -d ./src/data-source.ts migration:generate",
+      "migration:run": "npm run typeorm -- -d ./src/data-source.ts migration:run",
+      "migration:revert": "npm run typeorm -- -d ./src/data-source.ts migration:revert"
    },
    "dependencies": {
       "@nestjs/common": "^11.0.1",
@@ -53,9 +53,11 @@
       "@nestjs/testing": "^11.0.1",
       "@swc/cli": "^0.6.0",
       "@swc/core": "^1.10.7",
+      "@types/bcrypt": "^5.0.2",
       "@types/express": "^5.0.0",
       "@types/jest": "^29.5.14",
       "@types/node": "^22.10.7",
+      "@types/passport-jwt": "^4.0.1",
       "@types/supertest": "^6.0.2",
       "eslint": "^9.18.0",
       "eslint-config-prettier": "^10.0.1",

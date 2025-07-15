@@ -5,7 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
-  async sendPasswordResetEmail(to: string, resetLink: string): Promise<void> {
+  sendPasswordResetEmail(to: string, resetLink: string): Promise<void> {
     this.logger.log(`
       --- SIMULANDO ENVIO DE E-MAIL ---
       Para: ${to}
@@ -14,9 +14,15 @@ export class EmailService {
       ----------------------------------
       (Em produção, integre com um serviço de e-mail real como SendGrid, Mailgun, AWS SES ou Nodemailer com SMTP.)
     `);
+
+    return Promise.resolve();
   }
-  
-  async sendCreateEmpresaEmail(to: string, adminEmail: string, adminPassword: string): Promise<void> {
+
+  sendCreateEmpresaEmail(
+    to: string,
+    adminEmail: string,
+    adminPassword: string,
+  ): Promise<void> {
     this.logger.log(`
      --- SIMULANDO ENVIO DE E-MAIL ---
       Para: ${to}
@@ -39,5 +45,7 @@ export class EmailService {
       ----------------------------------
       (Em produção, integre com um serviço de e-mail real como SendGrid, Mailgun, AWS SES ou Nodemailer com SMTP.)
     `);
+
+    return Promise.resolve();
   }
 }

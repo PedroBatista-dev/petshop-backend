@@ -1,5 +1,9 @@
 // src/pais/pais.service.ts
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pais } from './entities/pais.entity';
@@ -14,7 +18,9 @@ export class PaisesService {
   ) {}
 
   async create(createPaisDto: CreatePaisDto, idEmpresa: string): Promise<Pais> {
-    const existingPais = await this.paisesRepository.findOne({ where: { descricao: createPaisDto.descricao, idEmpresa } });
+    const existingPais = await this.paisesRepository.findOne({
+      where: { descricao: createPaisDto.descricao, idEmpresa },
+    });
     if (existingPais) {
       throw new ConflictException('Já existe um país com esta descrição.');
     }
@@ -31,7 +37,11 @@ export class PaisesService {
     return this.paisesRepository.find({ where: { idEmpresa } });
   }
 
-  async update(id: string, updatePaisDto: UpdatePaisDto, idEmpresa: string): Promise<Pais> {
+  async update(
+    id: string,
+    updatePaisDto: UpdatePaisDto,
+    idEmpresa: string,
+  ): Promise<Pais> {
     const pais = await this.findOneById(id, idEmpresa);
     if (!pais) {
       throw new NotFoundException('País não encontrado.');

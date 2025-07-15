@@ -1,11 +1,19 @@
 // src/municipio/dto/create-municipio.dto.ts
-import { IsNotEmpty, IsString, MaxLength, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateMunicipioDto implements AuditableDto {
   @IsNotEmpty({ message: 'A descrição do município é obrigatória.' })
   @IsString({ message: 'A descrição do município deve ser uma string.' })
-  @MaxLength(100, { message: 'A descrição do município deve ter no máximo 100 caracteres.' })
+  @MaxLength(100, {
+    message: 'A descrição do município deve ter no máximo 100 caracteres.',
+  })
   descricao: string;
 
   @IsNotEmpty({ message: 'O estado é obrigatório.' })

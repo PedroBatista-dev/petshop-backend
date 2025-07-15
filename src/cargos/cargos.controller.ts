@@ -1,5 +1,17 @@
 // src/cargo/cargo.controller.ts
-import { Controller, Post, Body, Get, Param, UseGuards, Patch, HttpCode, Request, HttpStatus, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  UseGuards,
+  Patch,
+  HttpCode,
+  Request,
+  HttpStatus,
+  Delete,
+} from '@nestjs/common';
 import { CargosService } from './cargos.service';
 import { CreateCargoDto } from './dto/create-cargo.dto';
 import { UpdateCargoDto } from './dto/update-cargo.dto';
@@ -18,7 +30,7 @@ export class CargosController {
     return this.cargosService.create(createCargoDto, req.user.idEmpresa);
   }
 
-  @Roles('admin') 
+  @Roles('admin')
   @Get()
   async findAll(@Request() req) {
     return this.cargosService.findAll(req.user.idEmpresa);
@@ -29,13 +41,17 @@ export class CargosController {
     return this.cargosService.findOneById(id, req.user.idEmpresa);
   }
 
-  @Roles('admin') 
+  @Roles('admin')
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateCargoDto: UpdateCargoDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateCargoDto: UpdateCargoDto,
+    @Request() req,
+  ) {
     return this.cargosService.update(id, updateCargoDto, req.user.idEmpresa);
   }
 
-  @Roles('admin') 
+  @Roles('admin')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string, @Request() req) {

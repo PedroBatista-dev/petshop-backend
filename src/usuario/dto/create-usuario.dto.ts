@@ -1,21 +1,39 @@
 // src/usuario/dto/create-usuario.dto.ts
-import { IsEmail, IsNotEmpty, MinLength, MaxLength, IsEnum, IsOptional, IsUUID, IsDateString, Matches, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  MaxLength,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+  IsDateString,
+  Matches,
+  IsString,
+} from 'class-validator';
 import { Sexo, EstadoCivil } from '../entities/usuario.entity';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateUsuarioDto implements AuditableDto {
   @IsNotEmpty({ message: 'O nome completo é obrigatório.' })
   @IsString({ message: 'O nome completo deve ser uma string.' })
-  @MaxLength(255, { message: 'O nome completo deve ter no máximo 255 caracteres.' })
+  @MaxLength(255, {
+    message: 'O nome completo deve ter no máximo 255 caracteres.',
+  })
   nomeCompleto: string;
 
   @IsNotEmpty({ message: 'O CPF é obrigatório.' })
   @IsString({ message: 'O CPF deve ser uma string.' })
-  @Matches(/^\d{11}$/, { message: 'O CPF deve conter exatamente 11 dígitos numéricos.' })
+  @Matches(/^\d{11}$/, {
+    message: 'O CPF deve conter exatamente 11 dígitos numéricos.',
+  })
   cpf: string;
 
   @IsNotEmpty({ message: 'A data de nascimento é obrigatória.' })
-  @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (AAAA-MM-DD).' })
+  @IsDateString(
+    {},
+    { message: 'A data de nascimento deve ser uma data válida (AAAA-MM-DD).' },
+  )
   dataNascimento: string;
 
   @IsNotEmpty({ message: 'O sexo é obrigatório.' })

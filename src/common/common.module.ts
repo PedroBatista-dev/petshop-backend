@@ -3,12 +3,9 @@ import { Module, Global } from '@nestjs/common';
 import { EmailService } from './services/email.service';
 import { AuditInterceptor } from './audit/audit.interceptor';
 
-@Global() 
+@Global()
 @Module({
-  providers: [
-    EmailService,
-    AuditInterceptor,
-  ],
+  providers: [EmailService, AuditInterceptor],
   exports: [EmailService],
 })
 export class CommonModule {}

@@ -18,9 +18,9 @@ import { EmpresasModule } from '../empresas/empresas.module';
     CargosModule,
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule], 
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'), 
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: '1h' },
       }),
       inject: [ConfigService],

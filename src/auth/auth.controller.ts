@@ -1,5 +1,14 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, UseGuards, Request, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Get,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { CreateUsuarioDto } from '../usuario/dto/create-usuario.dto';
@@ -7,6 +16,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateEmpresaDto } from '../empresas/dto/create-empresa.dto';
+import { Request as ExpressRequest } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +32,7 @@ export class AuthController {
   async registerCliente(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.authService.registerCliente(createUsuarioDto);
   }
-  
+
   @Post('register/empresa')
   async registerEmpresa(@Body() createEmpresaDto: CreateEmpresaDto) {
     return this.authService.registerEmpresa(createEmpresaDto);
@@ -30,7 +40,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Request() req: ExpressRequest) {
     return req.user;
   }
 

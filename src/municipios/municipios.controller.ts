@@ -1,5 +1,17 @@
 // src/municipio/municipio.controller.ts
-import { Controller, Post, Body, Get, Param, UseGuards, Patch, Request, HttpCode, HttpStatus, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  UseGuards,
+  Patch,
+  Request,
+  HttpCode,
+  HttpStatus,
+  Delete,
+} from '@nestjs/common';
 import { MunicipiosService } from './municipios.service';
 import { CreateMunicipioDto } from './dto/create-municipio.dto';
 import { UpdateMunicipioDto } from './dto/update-municipio.dto';
@@ -27,8 +39,16 @@ export class MunicipiosController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateMunicipioDto: UpdateMunicipioDto, @Request() req) {
-    return this.municipioService.update(id, updateMunicipioDto, req.user.idEmpresa);
+  async update(
+    @Param('id') id: string,
+    @Body() updateMunicipioDto: UpdateMunicipioDto,
+    @Request() req,
+  ) {
+    return this.municipioService.update(
+      id,
+      updateMunicipioDto,
+      req.user.idEmpresa,
+    );
   }
 
   @Delete(':id')

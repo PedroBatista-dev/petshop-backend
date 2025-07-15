@@ -1,5 +1,17 @@
 // src/pais/pais.controller.ts
-import { Controller, Post, Body, Get, Param, UseGuards, Patch, HttpCode, HttpStatus, Request, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  UseGuards,
+  Patch,
+  HttpCode,
+  HttpStatus,
+  Request,
+  Delete,
+} from '@nestjs/common';
 import { PaisesService } from './paises.service';
 import { CreatePaisDto } from './dto/create-pais.dto';
 import { UpdatePaisDto } from './dto/update-pais.dto';
@@ -16,18 +28,22 @@ export class PaisesController {
     return this.paisService.create(createPaisDto, req.user.idEmpresa);
   }
 
-  @Get() 
+  @Get()
   async findAll(@Request() req) {
     return this.paisService.findAll(req.user.idEmpresa);
   }
 
-  @Get(':id') 
+  @Get(':id')
   async findOne(@Param('id') id: string, @Request() req) {
     return this.paisService.findOneById(id, req.user.idEmpresa);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePaisDto: UpdatePaisDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePaisDto: UpdatePaisDto,
+    @Request() req,
+  ) {
     return this.paisService.update(id, updatePaisDto, req.user.idEmpresa);
   }
 

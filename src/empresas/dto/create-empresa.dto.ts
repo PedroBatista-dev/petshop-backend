@@ -1,11 +1,20 @@
 // src/empresas/dto/create-empresa.dto.ts
-import { IsNotEmpty, IsString, MaxLength, IsEmail, IsOptional, IsAlphanumeric } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  IsEmail,
+  IsOptional,
+  IsAlphanumeric,
+} from 'class-validator';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateEmpresaDto implements AuditableDto {
   @IsNotEmpty({ message: 'A razão social é obrigatória.' })
   @IsString({ message: 'A razão social deve ser uma string.' })
-  @MaxLength(255, { message: 'A razão social deve ter no máximo 255 caracteres.' })
+  @MaxLength(255, {
+    message: 'A razão social deve ter no máximo 255 caracteres.',
+  })
   razaoSocial: string;
 
   @IsNotEmpty({ message: 'A descrição da empresa é obrigatória.' })
@@ -14,7 +23,9 @@ export class CreateEmpresaDto implements AuditableDto {
 
   @IsNotEmpty({ message: 'O CNPJ é obrigatório.' })
   @IsString({ message: 'O CNPJ deve ser uma string.' })
-  @MaxLength(18, { message: 'O CNPJ deve ter no máximo 18 caracteres (incluindo formatação).' })
+  @MaxLength(18, {
+    message: 'O CNPJ deve ter no máximo 18 caracteres (incluindo formatação).',
+  })
   cnpj: string;
 
   @IsNotEmpty({ message: 'O e-mail é obrigatório.' })
@@ -27,7 +38,9 @@ export class CreateEmpresaDto implements AuditableDto {
   telefone: string;
 
   @IsOptional()
-  @IsAlphanumeric('pt-BR', { message: 'A sigla deve conter apenas letras e números.' })
+  @IsAlphanumeric('pt-BR', {
+    message: 'A sigla deve conter apenas letras e números.',
+  })
   @MaxLength(10, { message: 'A sigla deve ter no máximo 10 caracteres.' })
   sigla: string;
 

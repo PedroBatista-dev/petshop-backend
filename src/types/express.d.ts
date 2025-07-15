@@ -1,10 +1,15 @@
+import { ParamsDictionary } from 'express-serve-static-core';
+import { Query } from 'express-serve-static-core';
+import { JwtUserPayload } from './user';
+
 declare namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        email: string;
-        descricaoCargo: string;
-        idEmpresa: string;
-      };
-    }
+  export interface Request {
+    user: JwtUserPayload;
+
+    params: ParamsDictionary & { idEmpresa?: string };
+
+    query: Query & { idEmpresa?: string };
+
+    body: { idEmpresa?: string; [key: string]: any };
   }
+}

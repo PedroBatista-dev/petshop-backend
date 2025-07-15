@@ -10,7 +10,7 @@ import { Endereco } from '../../enderecos/entities/endereco.entity';
 export enum Sexo {
   MASCULINO = 'M',
   FEMININO = 'F',
-  OUTRO = 'O'
+  OUTRO = 'O',
 }
 
 export enum EstadoCivil {
@@ -18,11 +18,12 @@ export enum EstadoCivil {
   CASADO = 'Casado',
   DIVORCIADO = 'Divorciado',
   VIUVO = 'Viúvo',
-  UNIAO_ESTAVEL = 'União Estável'
+  UNIAO_ESTAVEL = 'União Estável',
 }
 
 @Entity('usuarios')
-export class Usuario extends BaseEntityAuditoria { // Herda da classe base
+export class Usuario extends BaseEntityAuditoria {
+  // Herda da classe base
   @Column()
   nomeCompleto: string; // NomeCompleto (obrigatório)
 
@@ -56,29 +57,31 @@ export class Usuario extends BaseEntityAuditoria { // Herda da classe base
   @Column({ nullable: true }) // CódigoCargo (obrigatório) - ID do cargo
   idCargo: string;
 
-  @ManyToOne(() => Cargo, cargo => cargo.usuarios, { onDelete: 'RESTRICT' }) // Não permite deletar cargo se houver usuário associado
+  @ManyToOne(() => Cargo, (cargo) => cargo.usuarios, { onDelete: 'RESTRICT' }) // Não permite deletar cargo se houver usuário associado
   @JoinColumn({ name: 'idCargo' })
   cargo: Cargo;
 
   @Column({ nullable: true }) // Vinculo com Empresa (pode ser nulo para DONO_MASTER ou CLIENTE avulso)
   idEmpresa: string;
 
-  @ManyToOne(() => Empresa, empresa => empresa.usuarios, { onDelete: 'SET NULL' }) // Se a empresa for deletada, o usuário fica sem empresa
+  @ManyToOne(() => Empresa, (empresa) => empresa.usuarios, {
+    onDelete: 'SET NULL',
+  }) // Se a empresa for deletada, o usuário fica sem empresa
   @JoinColumn({ name: 'idEmpresa' })
   empresa: Empresa;
 
-  @OneToMany(() => Contato, contato => contato.usuario)
+  @OneToMany(() => Contato, (contato) => contato.usuario)
   contatos: Contato[];
 
-  @OneToMany(() => Endereco, endereco => endereco.usuario)
+  @OneToMany(() => Endereco, (endereco) => endereco.usuario)
   enderecos: Endereco[];
 
   async comparePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.passwordHash);
+    return await bcrypt.compare(password, this.passwordHash);
   }
 
   static async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
-    return bcrypt.hash(password, saltRounds);
+    return await bcrypt.hash(password, saltRounds);
   }
 }

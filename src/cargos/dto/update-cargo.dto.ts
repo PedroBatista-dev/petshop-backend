@@ -3,6 +3,9 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateCargoDto } from './create-cargo.dto';
 import { AuditableDto } from '../../common/audit/audit.interceptor';
 
-export class UpdateCargoDto extends PartialType(CreateCargoDto) implements AuditableDto {
+export class UpdateCargoDto
+  extends PartialType(CreateCargoDto)
+  implements AuditableDto
+{
   updateId?: string;
 }

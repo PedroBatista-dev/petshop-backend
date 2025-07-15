@@ -1,5 +1,9 @@
 // src/municipio/municipio.service.ts
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Municipio } from './entities/municipio.entity';
@@ -13,18 +17,30 @@ export class MunicipiosService {
     private municipiosRepository: Repository<Municipio>,
   ) {}
 
-  async create(createMunicipioDto: CreateMunicipioDto, idEmpresa: string): Promise<Municipio> {
+  async create(
+    createMunicipioDto: CreateMunicipioDto,
+    idEmpresa: string,
+  ): Promise<Municipio> {
     const existingMunicipio = await this.municipiosRepository.findOne({
-      where: { descricao: createMunicipioDto.descricao, estado: createMunicipioDto.estado, idEmpresa },
+      where: {
+        descricao: createMunicipioDto.descricao,
+        estado: createMunicipioDto.estado,
+        idEmpresa,
+      },
     });
     if (existingMunicipio) {
-      throw new ConflictException('Já existe um município com esta descrição e estado.');
+      throw new ConflictException(
+        'Já existe um município com esta descrição e estado.',
+      );
     }
     const novoMunicipio = this.municipiosRepository.create(createMunicipioDto);
     return this.municipiosRepository.save(novoMunicipio);
   }
 
-  async findOneById(id: string, idEmpresa: string): Promise<Municipio | undefined> {
+  async findOneById(
+    id: string,
+    idEmpresa: string,
+  ): Promise<Municipio | undefined> {
     return this.municipiosRepository.findOne({ where: { id, idEmpresa } });
   }
 
@@ -32,7 +48,11 @@ export class MunicipiosService {
     return this.municipiosRepository.find({ where: { idEmpresa } });
   }
 
-  async update(id: string, updateMunicipioDto: UpdateMunicipioDto, idEmpresa: string): Promise<Municipio> {
+  async update(
+    id: string,
+    updateMunicipioDto: UpdateMunicipioDto,
+    idEmpresa: string,
+  ): Promise<Municipio> {
     const municipio = await this.findOneById(id, idEmpresa);
     if (!municipio) {
       throw new NotFoundException('Município não encontrado.');
