@@ -68,6 +68,44 @@ export class UsuariosService {
     return this.usuariosRepository.save(novoUsuario);
   }
 
+  async createClient(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    const empresa = await this.empresasService.findOneById(
+      createUsuarioDto.idEmpresa,
+    );
+    if (!empresa) {
+      throw new NotFoundException('Empresa não encontrada.');
+    }
+    const existingUserByEmail = await this.usuariosRepository.findOne({
+      where: {
+        email: createUsuarioDto.email,
+        idEmpresa: createUsuarioDto.idEmpresa,
+      },
+    });
+    if (existingUserByEmail) {
+      throw new ConflictException('Este e-mail já está em uso.');
+    }
+    const existingUserByCpf = await this.usuariosRepository.findOne({
+      where: {
+        cpf: createUsuarioDto.cpf,
+        idEmpresa: createUsuarioDto.idEmpresa,
+      },
+    });
+    if (existingUserByCpf) {
+      throw new ConflictException('Este CPF já está em uso.');
+    }
+
+    const novoUsuario = this.usuariosRepository.create(createUsuarioDto);
+    novoUsuario.passwordHash = await Usuario.hashPassword(
+      createUsuarioDto.password,
+    );
+    novoUsuario.dataNascimento = moment(
+      createUsuarioDto.dataNascimento,
+      'YYYY-MM-DD',
+    ).toDate();
+
+    return this.usuariosRepository.save(novoUsuario);
+  }
+
   async createAdmin(
     empresa: Empresa,
     cargoId: string,

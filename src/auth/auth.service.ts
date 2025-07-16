@@ -72,7 +72,6 @@ export class AuthService {
     const clienteCargo = await this.cargoService.findOneByDescricao(
       'Cliente',
       false,
-      createUsuarioDto.idEmpresa,
     );
     if (!clienteCargo) {
       throw new NotFoundException(
@@ -81,7 +80,7 @@ export class AuthService {
     }
 
     createUsuarioDto.idCargo = clienteCargo.id;
-    return this.usuarioService.create(createUsuarioDto);
+    return this.usuarioService.createClient(createUsuarioDto);
   }
 
   async registerEmpresa(createEmpresaDto: CreateEmpresaDto) {
