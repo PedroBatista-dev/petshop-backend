@@ -9,8 +9,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { SAME_COMPANY_KEY } from '../decorators/same-company.decorator';
-import { Request as ExpressRequest } from 'express';
 import { JwtUserPayload } from '../../types/user';
+import { Request as ExpressRequest } from 'express';
 
 @Injectable()
 export class CompanyGuard implements CanActivate {
@@ -28,9 +28,11 @@ export class CompanyGuard implements CanActivate {
       return true;
     }
 
-    const request: ExpressRequest = context.switchToHttp().getRequest();
+    const request: ExpressRequest = context
+      .switchToHttp()
+      .getRequest<ExpressRequest>();
 
-    const user: JwtUserPayload = request.user;
+    const user: JwtUserPayload = request.user as JwtUserPayload;
 
     if (!user || !user.id) {
       throw new UnauthorizedException(
@@ -51,12 +53,13 @@ export class CompanyGuard implements CanActivate {
     if (request.params?.idEmpresa) {
       // Ex: /recursos/:idEmpresa
       resourceCodigoEmpresa = request.params.idEmpresa;
-    } else if (request.body?.idEmpresa) {
+    } else if ((request.body as { idEmpresa?: string })?.idEmpresa) {
       // Ex: { idEmpresa: '...' }
-      resourceCodigoEmpresa = request.body.idEmpresa;
+      resourceCodigoEmpresa = (request.body as { idEmpresa?: string })
+        ?.idEmpresa;
     } else if (request.query?.idEmpresa) {
       // Ex: ?idEmpresa=...
-      resourceCodigoEmpresa = request.query.idEmpresa;
+      resourceCodigoEmpresa = request.query.idEmpresa as string;
     }
 
     // Se a rota exige a verificação de empresa, mas não conseguimos encontrar o ID da empresa no recurso

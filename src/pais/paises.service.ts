@@ -33,7 +33,7 @@ export class PaisesService {
     return this.paisesRepository.findOne({ where: { id, idEmpresa } });
   }
 
-  async findAll(idEmpresa): Promise<Pais[]> {
+  async findAll(idEmpresa: string): Promise<Pais[]> {
     return this.paisesRepository.find({ where: { idEmpresa } });
   }
 

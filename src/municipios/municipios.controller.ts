@@ -17,6 +17,8 @@ import { CreateMunicipioDto } from './dto/create-municipio.dto';
 import { UpdateMunicipioDto } from './dto/update-municipio.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtUserPayload } from '../types/user';
+import { Request as ExpressRequest } from 'express';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('municipios')
@@ -24,31 +26,34 @@ export class MunicipiosController {
   constructor(private readonly municipioService: MunicipiosService) {}
 
   @Post()
-  async create(@Body() createMunicipioDto: CreateMunicipioDto, @Request() req) {
-    return this.municipioService.create(createMunicipioDto, req.user.idEmpresa);
+  async create(
+    @Body() createMunicipioDto: CreateMunicipioDto,
+    @Request() req: ExpressRequest,
+  ) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.municipioService.create(createMunicipioDto, user.idEmpresa);
   }
 
   @Get()
-  async findAll(@Request() req) {
-    return this.municipioService.findAll(req.user.idEmpresa);
+  async findAll(@Request() req: ExpressRequest) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.municipioService.findAll(user.idEmpresa);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req) {
-    return this.municipioService.findOneById(id, req.user.idEmpresa);
+  async findOne(@Param('id') id: string, @Request() req: ExpressRequest) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.municipioService.findOneById(id, user.idEmpresa);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateMunicipioDto: UpdateMunicipioDto,
-    @Request() req,
+    @Request() req: ExpressRequest,
   ) {
-    return this.municipioService.update(
-      id,
-      updateMunicipioDto,
-      req.user.idEmpresa,
-    );
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.municipioService.update(id, updateMunicipioDto, user.idEmpresa);
   }
 
   @Delete(':id')

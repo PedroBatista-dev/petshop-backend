@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { JwtUserPayload } from '../../types/user';
+import { Request as ExpressRequest } from 'express';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -22,7 +24,12 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const request: ExpressRequest = context
+      .switchToHttp()
+      .getRequest<ExpressRequest>();
+
+    const user: JwtUserPayload = request.user as JwtUserPayload;
+
     if (!user || !user.descricaoCargo) {
       throw new UnauthorizedException(
         'Usuário não autenticado ou sem cargo definido.',

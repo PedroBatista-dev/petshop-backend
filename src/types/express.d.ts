@@ -1,5 +1,4 @@
-import { ParamsDictionary } from 'express-serve-static-core';
-import { Query } from 'express-serve-static-core';
+import { ParamsDictionary, Query } from 'express-serve-static-core';
 import { JwtUserPayload } from './user';
 
 declare namespace Express {

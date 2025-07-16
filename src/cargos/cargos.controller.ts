@@ -18,6 +18,8 @@ import { UpdateCargoDto } from './dto/update-cargo.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtUserPayload } from '../types/user';
+import { Request as ExpressRequest } from 'express';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('cargos')
@@ -26,19 +28,25 @@ export class CargosController {
 
   @Roles('admin')
   @Post()
-  async create(@Body() createCargoDto: CreateCargoDto, @Request() req) {
-    return this.cargosService.create(createCargoDto, req.user.idEmpresa);
+  async create(
+    @Body() createCargoDto: CreateCargoDto,
+    @Request() req: ExpressRequest,
+  ) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.cargosService.create(createCargoDto, user.idEmpresa);
   }
 
   @Roles('admin')
   @Get()
-  async findAll(@Request() req) {
-    return this.cargosService.findAll(req.user.idEmpresa);
+  async findAll(@Request() req: ExpressRequest) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.cargosService.findAll(user.idEmpresa);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req) {
-    return this.cargosService.findOneById(id, req.user.idEmpresa);
+  async findOne(@Param('id') id: string, @Request() req: ExpressRequest) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.cargosService.findOneById(id, user.idEmpresa);
   }
 
   @Roles('admin')
@@ -46,15 +54,17 @@ export class CargosController {
   async update(
     @Param('id') id: string,
     @Body() updateCargoDto: UpdateCargoDto,
-    @Request() req,
+    @Request() req: ExpressRequest,
   ) {
-    return this.cargosService.update(id, updateCargoDto, req.user.idEmpresa);
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    return this.cargosService.update(id, updateCargoDto, user.idEmpresa);
   }
 
   @Roles('admin')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string, @Request() req) {
-    await this.cargosService.remove(id, req.user.idEmpresa);
+  async remove(@Param('id') id: string, @Request() req: ExpressRequest) {
+    const user: JwtUserPayload = req.user as JwtUserPayload;
+    await this.cargosService.remove(id, user.idEmpresa);
   }
 }
