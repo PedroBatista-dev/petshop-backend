@@ -13,7 +13,9 @@ import { AuditableDto } from '../../common/audit/audit.interceptor';
 
 export class CreateContatoDto implements AuditableDto {
   @IsNotEmpty({ message: 'O campo Principal é obrigatório (S ou N).' })
-  @IsEnum(Principal, { message: 'Valor inválido para Principal. Use S ou N.' })
+  @IsEnum(Principal, {
+    message: 'Valor inválido para Principal. Use S ou N.',
+  })
   principal: Principal;
 
   @IsNotEmpty({ message: 'O nome do contato é obrigatório.' })

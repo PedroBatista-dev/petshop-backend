@@ -32,7 +32,9 @@ export class CreateUsuarioDto implements AuditableDto {
   @IsNotEmpty({ message: 'A data de nascimento é obrigatória.' })
   @IsDateString(
     {},
-    { message: 'A data de nascimento deve ser uma data válida (AAAA-MM-DD).' },
+    {
+      message: 'A data de nascimento deve ser uma data válida (AAAA-MM-DD).',
+    },
   )
   dataNascimento: string;
 
