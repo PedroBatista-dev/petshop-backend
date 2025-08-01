@@ -5,7 +5,6 @@ import {
   Body,
   Get,
   Param,
-  Patch,
   Delete,
   HttpCode,
   HttpStatus,
@@ -14,6 +13,7 @@ import {
   UnauthorizedException,
   NotFoundException,
   BadRequestException,
+  Put,
 } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
@@ -65,13 +65,14 @@ export class UsuariosController {
     return usuario;
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateUsuarioDto: UpdateUsuarioDto,
     @Request() req: ExpressRequest,
   ) {
     const user: JwtUserPayload = req.user as JwtUserPayload;
+
     if (user.id === id) {
       return this.usuarioService.update(id, updateUsuarioDto, user.idEmpresa);
     }

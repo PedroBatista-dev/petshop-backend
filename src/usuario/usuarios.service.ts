@@ -205,16 +205,34 @@ export class UsuariosService {
       throw new NotFoundException('Usuário não encontrado.');
     }
 
-    usuario.passwordHash = await Usuario.hashPassword(
-      updateUsuarioDto.password,
-    );
-    usuario.dataNascimento = moment(
-      updateUsuarioDto.dataNascimento,
-      'YYYY-MM-DD',
-    ).toDate();
+    const existingUserByCpf = await this.usuariosRepository.findOne({
+      where: {
+        cpf: updateUsuarioDto.cpf,
+        idEmpresa: usuario.idEmpresa,
+      },
+    });
+    if (existingUserByCpf && usuario.id != existingUserByCpf.id) {
+      throw new ConflictException('Este CPF já está em uso.');
+    }
 
-    Object.assign(usuario, updateUsuarioDto);
-    return this.usuariosRepository.save(usuario);
+    const userUpdate: UpdateUsuarioDto = {
+      id: id,
+      nomeCompleto: updateUsuarioDto.nomeCompleto,
+      cpf: updateUsuarioDto.cpf,
+      dataNascimento: moment(updateUsuarioDto.dataNascimento).format(
+        'YYYY-MM-DD',
+      ),
+      sexo: updateUsuarioDto.sexo,
+      estadoCivil: updateUsuarioDto.estadoCivil,
+      telefone: updateUsuarioDto.telefone,
+      email: usuario.email,
+      idCargo: usuario.idCargo,
+      passwordHash: usuario.passwordHash,
+      idEmpresa: usuario.idEmpresa,
+    };
+    console.log(userUpdate);
+
+    return this.usuariosRepository.save(userUpdate);
   }
 
   async remove(id: string): Promise<void> {
